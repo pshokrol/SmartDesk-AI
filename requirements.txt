@@ -1,0 +1,10 @@
+langgraph
+langgraph-supervisor
+langchain
+langchain-openai
+langchain-chroma
+langchain-huggingface
+chromadb
+sentence-transformers
+python-dotenv
+gradio
