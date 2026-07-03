@@ -44,4 +44,20 @@ for q in test_queries:
     print(f"  {q!r}: confident={confident}  top_score={top_score}")
 
 
-    
+############## Stress test: run the same query multiple times to see if scores are consistent ##############
+print("--- stress testing is_confident_match ---")
+stress_queries = [
+    "my authenticator app broke, how do I fix it",   # real topic (MFA reset), very different wording — predict: True
+    "my monitor keeps flickering",                    # gap topic, shares "monitor"/equipment vocab with onb-003 — predict: False
+    "leave",                                           # very short/vague, real general topic — predict: uncertain, worth seeing
+    "hey so my vpn thing keeps dropping when im on hotel wifi is that normal", # real topic (VPN/NAT timeout), messy phrasing — predict: True
+    "can I bring my dog to the office",                # gap topic, no vocab overlap with anything — predict: False
+]
+for q in stress_queries:
+    results = retrieve_with_scores(vectorstore, q)
+    confident = is_confident_match(results)
+    top_id = results[0][0].metadata['id'] if results else None
+    top_score = results[0][1] if results else None
+    print(f"  {q!r}")
+    print(f"    -> confident={confident}  top_score={top_score}  matched_id={top_id}")
+      
