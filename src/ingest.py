@@ -81,15 +81,20 @@ def get_embedding_function():
 
 def build_vectorstore(documents: list[Document], persist_directory: str = "./chroma_db") -> Chroma:
     """Embeds documents and stores them in a persistent Chroma vector store on disk.
-    NOTE: re-running this on the same persist_directory will currently add
-    duplicate entries rather than refresh them — acceptable for now, revisit later."""
+    Uses each document's id (from metadata) as its Chroma id, so re-running
+    ingestion on the same persist_directory updates existing entries in place
+    instead of creating duplicates..
+    """
 
 
     embedding_function = get_embedding_function()
+    # Extract IDs from document metadata
+    ids = [doc.metadata["id"] for doc in documents]
     vectorstore = Chroma.from_documents(
         documents=documents,
         embedding=embedding_function,
-        persist_directory=persist_directory
+        persist_directory=persist_directory,
+        ids=ids
     )
     
     return vectorstore
