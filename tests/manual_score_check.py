@@ -15,3 +15,13 @@ for q in queries:
     results = vectorstore.similarity_search_with_score(q, k=2)
     for doc, score in results:
         print(f"  score={score:.3f}  id={doc.metadata['id']}  q={doc.metadata['question']}")
+
+
+#############  Retrieve with scores test  #############
+
+from src.rag_agent import retrieve_with_scores
+
+print("--- testing retrieve_with_scores ---")
+results = retrieve_with_scores(vectorstore, "how do I reset my password")
+for doc, score in results:
+    print(f"  score={score:.3f}  id={doc.metadata['id']}")
