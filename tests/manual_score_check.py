@@ -81,3 +81,16 @@ for q in test_qs:
     print(f"    answer={assessment.answer!r}")
 
 
+############### Test unified entry point end-to-end, answer_question  ###############
+from src.rag_agent import answer_question
+
+print("\n--- testing answer_question (full pipeline) ---")
+final_tests = [
+    "how do I reset my password",                      # confident + answerable
+    "where do I park my car",                          # not confident (gap)
+    "how many sick days do part-time employees get",   # confident retrieval, but LLM should say can't answer
+]
+for q in final_tests:
+    result = answer_question(vectorstore, q)
+    print(f"  Q: {q!r}")
+    print(f"    can_answer={result.can_answer}  answer={result.answer!r}")

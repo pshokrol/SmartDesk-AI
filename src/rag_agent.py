@@ -1,4 +1,5 @@
 
+from chromadb.base_types import Where
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
@@ -107,3 +108,23 @@ def assess_answer(question: str, results: list[tuple[Document, float]]) -> RAGAs
     # response = llm.invoke(f"Question: {question}\n\nContext:\n{context}")
 
     return response
+
+
+def answer_question(vectorstore, question: str) -> RAGAssessment:
+    
+    """Full RAG pipeline entry point: retrieves KB context, checks retrieval
+    confidence (returning early without an LLM call if the match is too weak),
+    then asks the LLM to assess and answer if retrieval looked confident."""
+
+    # Step 1: Retrieve with scores
+    results = retrieve_with_scores(vectorstore, question)
+
+    # Step 2: Check if confident match
+    if not is_confident_match(results):
+        return RAGAssessment(can_answer=False, answer="")  # Early return if not confident
+
+    # Step 3: Assess answer with LLM
+    assessment = assess_answer(question, results)
+
+    return assessment
+
