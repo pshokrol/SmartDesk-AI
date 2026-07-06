@@ -111,8 +111,6 @@ result = create_ticket(
 print(result)
 
 ############## Test ticket store (SQLite) #############
-
-# add to tests/manual_score_check.py or a new file
 from src.ticket_store import link_ticket, get_ticket_keys_for_email
 
 print("\n--- testing ticket_store ---")
@@ -126,7 +124,6 @@ print(f"Tickets for nobody@boldagent.com: {no_keys}")
 
 
 ###### Test Jira ticket status retrieval #############
-# add to tests/manual_score_check.py
 from src.jira_tool import get_ticket_status
 
 print("\n--- testing get_ticket_status ---")
@@ -137,4 +134,11 @@ for s in statuses:
 no_tickets = get_ticket_status("nobody@boldagent.com")
 print(f"  No tickets case: {no_tickets}")
 
+
+######### Test tools.py functions #############
+from src.tools import search_knowledge_base, create_support_ticket, check_ticket_status
+
+print("\n--- testing tools.py wrappers ---")
+result = search_knowledge_base.invoke({"question": "how do I reset my password"})
+print(f"search_knowledge_base result: {result}")
 

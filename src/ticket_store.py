@@ -28,6 +28,16 @@ def link_ticket(email: str, ticket_key: str) -> None:
         )
     """)
 
+    # Check if a row with this exact email and ticket_key already exists
+    cursor.execute("""
+        SELECT 1 FROM ticket_links WHERE email = ? AND ticket_key = ?
+    """, (email, ticket_key))
+    
+    if cursor.fetchone():
+        # Row already exists, skip the insert
+        conn.close()
+        return
+
     # Insert the new link
     cursor.execute("""
         INSERT INTO ticket_links (email, ticket_key, created_at)
