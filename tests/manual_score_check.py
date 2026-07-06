@@ -123,3 +123,18 @@ print(f"Tickets for test@boldagent.com: {keys}")
 
 no_keys = get_ticket_keys_for_email("nobody@boldagent.com")
 print(f"Tickets for nobody@boldagent.com: {no_keys}")
+
+
+###### Test Jira ticket status retrieval #############
+# add to tests/manual_score_check.py
+from src.jira_tool import get_ticket_status
+
+print("\n--- testing get_ticket_status ---")
+statuses = get_ticket_status("test@boldagent.com")
+for s in statuses:
+    print(f"  {s}")
+
+no_tickets = get_ticket_status("nobody@boldagent.com")
+print(f"  No tickets case: {no_tickets}")
+
+

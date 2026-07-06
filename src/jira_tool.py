@@ -1,6 +1,8 @@
 import os
 import requests
 from dotenv import load_dotenv
+from src.ticket_store import get_ticket_keys_for_email
+
 
 def create_ticket(email: str, summary: str, description: str, category: str, priority: str = "medium") -> dict:
     """
@@ -74,3 +76,53 @@ def create_ticket(email: str, summary: str, description: str, category: str, pri
         return {"ticket_key": ticket_key, "ticket_url": ticket_url}
     else:
         return {"error": response.text}
+
+
+
+def get_ticket_status(email: str) -> list[dict]:
+    """
+    Retrieve the current status of all Jira tickets linked to the given employee email.
+
+    Args:
+        email (str): The email of the employee whose tickets are to be checked.
+
+    Returns:
+        list[dict]: A list of dictionaries, each containing the ticket key, summary, and current status.
+                    If no tickets are found, returns an empty list.
+    """
+
+    load_dotenv()
+
+    base_url = os.getenv("JIRA_BASE_URL")
+    jira_email = os.getenv("JIRA_EMAIL")
+    token = os.getenv("JIRA_API_TOKEN")
+
+    # Get the list of ticket keys linked to this email
+    ticket_keys = get_ticket_keys_for_email(email)
+
+    if not ticket_keys:
+        return []
+
+    ticket_statuses = []
+    for ticket_key in ticket_keys:
+        response = requests.get(
+            f"{base_url}/rest/api/3/issue/{ticket_key}",
+            auth=(jira_email, token)
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            summary = data["fields"]["summary"]
+            status = data["fields"]["status"]["name"]
+            ticket_statuses.append({
+                "ticket_key": ticket_key,
+                "summary": summary,
+                "status": status
+            })
+        else:
+            ticket_statuses.append({
+                "ticket_key": ticket_key,
+                "error": response.text
+            })
+
+    return ticket_statuses
