@@ -181,4 +181,20 @@ r3 = agent.invoke(
 )
 print("Turn 3:", r3["messages"][-1].content)
 
+############# Test satatus check flow #############
+print("\n--- testing ticket status-check flow ---")
+config3 = {"configurable": {"thread_id": "test-conversation-3"}}
 
+# Turn 1: ask about ticket status without providing email yet
+r1 = agent.invoke(
+    {"messages": [{"role": "user", "content": "what's the status of my tickets?"}]},
+    config=config3
+)
+print("Turn 1:", r1["messages"][-1].content)
+
+# Turn 2: provide the email that has real tickets linked (test@boldagent.com has KAN-2, KAN-3)
+r2 = agent.invoke(
+    {"messages": [{"role": "user", "content": "my email is test@boldagent.com"}]},
+    config=config3
+)
+print("Turn 2:", r2["messages"][-1].content)
