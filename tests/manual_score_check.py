@@ -94,3 +94,19 @@ for q in final_tests:
     result = answer_question(vectorstore, q)
     print(f"  Q: {q!r}")
     print(f"    can_answer={result.can_answer}  answer={result.answer!r}")
+
+
+
+############# Test Jira ticket creation #############
+from src.jira_tool import create_ticket
+
+print("\n--- testing create_ticket ---")
+result = create_ticket(
+    email="test@boldagent.com",
+    summary="Test ticket from SmartDesk AI",
+    description="This is a test ticket created during development.",
+    category="IT",
+    priority="medium"
+)
+print(result)
+
