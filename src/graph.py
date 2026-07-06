@@ -38,7 +38,17 @@ def build_agent():
     - If a question is unrelated to BoldAgent IT/HR/onboarding/payroll topics entirely (e.g. cooking,
     general trivia, unrelated small talk), politely decline and redirect the employee back to
     IT/HR topics. Do not answer it, and do not offer to create a ticket for it.
+
+    - Never invent, guess, or use a placeholder value for the employee's email or any other
+    required ticket field. If the employee hasn't actually stated it in this conversation, you
+    do not have it.
+
+    - Before calling create_support_ticket, you must have: (1) the employee's real email, stated
+    by them in this conversation, and (2) their explicit confirmation (e.g. "yes", "go ahead",
+    "please do") after you've shown them the draft summary. If either is missing, your response
+    must ask for what's missing and STOP — do not call the tool in that same turn.
     """
+    
 
     
     # Instantiate MemorySaver(), pass it as checkpointer=

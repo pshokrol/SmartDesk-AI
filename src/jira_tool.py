@@ -2,11 +2,13 @@ import os
 import requests
 from dotenv import load_dotenv
 from src.ticket_store import get_ticket_keys_for_email
+from src.ticket_store import link_ticket
 
 
 def create_ticket(email: str, summary: str, description: str, category: str, priority: str = "medium") -> dict:
     """
-    Create a Jira ticket in the specified project using the provided details.
+    Create a Jira ticket in the specified project using the provided details,
+    and record the email-to-ticket link locally for later status lookups.
 
     Args:
         email (str): The email of the employee submitting the ticket.
@@ -17,10 +19,7 @@ def create_ticket(email: str, summary: str, description: str, category: str, pri
 
     Returns:
         dict: A dictionary containing the ticket key and URL if successful,
-              or an error message if failed.
-
-    Updat ethe code and given that you now need two different URLs for two different purposes (API calls vs. a human-clickable browse link), 
-    what's a clean way to store both? Consider adding a new environment variable — maybe JIRA_SITE_URL=https://pshokrol.atlassian.net — alongside your existing JIRA_BASE_URL, and using each for its correct purpose.
+            or an error message if failed.
     """
 
     load_dotenv()
@@ -56,7 +55,7 @@ def create_ticket(email: str, summary: str, description: str, category: str, pri
             "issuetype": {
                 "name": "Task"
             },
-            "labels": [category.upper()],
+            "labels": [category.upper().replace(" ", "_")],  # Convert category to uppercase and replace spaces with underscores
             "priority": {
                 "name": priority.capitalize()
             }
@@ -73,6 +72,7 @@ def create_ticket(email: str, summary: str, description: str, category: str, pri
         data = response.json()
         ticket_key = data.get("key")
         ticket_url = f"{site_url}/browse/{ticket_key}"
+        link_ticket(email, ticket_key)   # new line
         return {"ticket_key": ticket_key, "ticket_url": ticket_url}
     else:
         return {"error": response.text}
@@ -126,3 +126,9 @@ def get_ticket_status(email: str) -> list[dict]:
             })
 
     return ticket_statuses
+
+
+
+
+
+
