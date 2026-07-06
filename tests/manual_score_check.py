@@ -110,3 +110,16 @@ result = create_ticket(
 )
 print(result)
 
+############## Test ticket store (SQLite) #############
+
+# add to tests/manual_score_check.py or a new file
+from src.ticket_store import link_ticket, get_ticket_keys_for_email
+
+print("\n--- testing ticket_store ---")
+link_ticket("test@boldagent.com", "KAN-2")
+link_ticket("test@boldagent.com", "KAN-3")
+keys = get_ticket_keys_for_email("test@boldagent.com")
+print(f"Tickets for test@boldagent.com: {keys}")
+
+no_keys = get_ticket_keys_for_email("nobody@boldagent.com")
+print(f"Tickets for nobody@boldagent.com: {no_keys}")
