@@ -142,3 +142,15 @@ print("\n--- testing tools.py wrappers ---")
 result = search_knowledge_base.invoke({"question": "how do I reset my password"})
 print(f"search_knowledge_base result: {result}")
 
+###### Test full agent with React-style reasoning loop #############
+from src.graph import build_agent
+
+print("\n--- testing full agent ---")
+agent = build_agent()
+config = {"configurable": {"thread_id": "test-conversation-1"}}
+
+response = agent.invoke(
+    {"messages": [{"role": "user", "content": "how do I reset my password"}]},
+    config=config
+)
+print(response["messages"][-1].content)
