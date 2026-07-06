@@ -154,3 +154,31 @@ response = agent.invoke(
     config=config
 )
 print(response["messages"][-1].content)
+
+
+######### Test multi-turn conversation with the agent #############
+print("\n--- testing multi-turn ticket creation flow ---")
+config2 = {"configurable": {"thread_id": "test-conversation-2"}}
+
+# Turn 1: report a problem (something NOT in the KB, so it should route to ticketing)
+r1 = agent.invoke(
+    {"messages": [{"role": "user", "content": "my monitor has been flickering for two days, can someone help"}]},
+    config=config2
+)
+print("Turn 1:", r1["messages"][-1].content)
+
+# Turn 2: provide email when asked
+r2 = agent.invoke(
+    {"messages": [{"role": "user", "content": "my email is test2@boldagent.com"}]},
+    config=config2
+)
+print("Turn 2:", r2["messages"][-1].content)
+
+# Turn 3: confirm ticket creation
+r3 = agent.invoke(
+    {"messages": [{"role": "user", "content": "yes, please create the ticket"}]},
+    config=config2
+)
+print("Turn 3:", r3["messages"][-1].content)
+
+
