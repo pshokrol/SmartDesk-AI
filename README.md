@@ -6,6 +6,7 @@ can't confidently answer, the agent collects the details and creates a Jira supp
 ticket — with the employee's explicit confirmation required before anything is created.
 
 ## Architecture
+```
 Employee message
 │
 ▼
@@ -29,6 +30,7 @@ then fetches live status from Jira
                 ▼
           Gradio chat UI (src/app.py)
 
+```
 
 **Why three layers of confidence, not one:** a single distance threshold isn't enough —
 retrieval can look confident (good vector-similarity score) while the actual retrieved
