@@ -38,4 +38,4 @@ demo = gr.ChatInterface(
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0", server_port=7860)    # Added for Docker compatibility; Gradio defaults to localhost, which isn't accessible from outside the container.
