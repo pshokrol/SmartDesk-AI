@@ -51,8 +51,8 @@ locally-embedded knowledge base entries), no sparse/keyword (BM25) layer.
 ## Project structure
 ```
 data/kb/qa_pairs.json      37 Q&A entries (IT Support, HR Policies, Onboarding, Payroll)
-— deliberate gaps left uncovered (parking, monitor flicker,
-printer setup, etc.) so escalation has real things to catch
+                           with deliberate gaps left uncovered (parking, monitor flicker,
+                           printer setup, etc.) so escalation has real things to catch
 src/
 ingest.py             load KB → build Documents → embed into persistent Chroma store
 rag_agent.py           retrieve_with_scores, is_confident_match, assess_answer,
