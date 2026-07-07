@@ -141,3 +141,76 @@ development, covering: KB ingestion and dedup, retrieval score thresholds, LLM
 self-assessment, Jira ticket creation and status lookup, local ticket-store dedup,
 and full multi-turn agent conversations (KB answering, ticket creation with
 confirmation-gating, and status checks).
+
+## Deployment (AWS EC2 + Docker)
+
+SmartDesk AI is deployed as a Docker container running on an AWS EC2 instance.
+
+### Launch an EC2 instance
+
+- AMI: Amazon Linux 2023 (x86_64)
+- Instance type: **`t3.small`** (2 vCPU, 2GB RAM), a `t2.micro`/`t3.micro` (1GB RAM)
+  is **not enough**; the app crashes with an out-of-memory error (`Exited (137)`)
+  while loading the embedding model and LangChain/LangGraph dependencies.
+- Storage: **20 GiB** minimum. The default 8 GiB fills up during `pip install`
+  (the `torch`/`transformers`/`chromadb` dependency stack is large) and the
+  Docker build fails with `No space left on device`.
+- Security group inbound rules:
+  - SSH (port 22), restrict to your own IP
+  - Custom TCP, port 7860 — source "Anywhere" (this is the app's port)
+
+### Install Docker and Git on the instance
+
+```bash
+sudo dnf update -y
+sudo dnf install -y docker git
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+# log out and back in for the group change to take effect
+```
+
+### Clone the repo and configure secrets
+
+```bash
+git clone https://github.com/<your-username>/SmartDesk-AI.git
+cd SmartDesk-AI
+nano .env   # paste in the same values as your local .env
+chmod 600 .env
+```
+
+### Build and run
+
+```bash
+docker build -t smartdesk-ai .
+docker run -d --name smartdesk-ai --env-file .env -p 7860:7860 smartdesk-ai
+```
+
+Verify it's running:
+```bash
+docker ps
+docker logs smartdesk-ai
+```
+
+Visit `http://<your-instance-public-ip>:7860` in a browser.
+
+### If you resize the EBS volume after launch
+
+Resizing the volume in the AWS Console does **not** automatically resize the
+Linux filesystem on top of it, that's a separate step:
+
+```bash
+sudo growpart /dev/nvme0n1 1
+sudo xfs_growfs -d /
+```
+
+### Notes
+
+- The instance's public IP changes if you **stop and start** it (not just
+  reboot) — unless you allocate an Elastic IP. Check the current IP in the
+  EC2 console before connecting.
+- Secrets are injected at container runtime via `--env-file .env` and are
+  never baked into the Docker image itself.
+- If a secret is ever accidentally exposed (e.g. pasted somewhere it
+  shouldn't be), rotate it immediately, revoke the old key/token and
+  generate a new one, rather than assuming it's fine.
