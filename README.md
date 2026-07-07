@@ -54,15 +54,15 @@ data/kb/qa_pairs.json      37 Q&A entries (IT Support, HR Policies, Onboarding, 
                            with deliberate gaps left uncovered (parking, monitor flicker,
                            printer setup, etc.) so escalation has real things to catch
 src/
-ingest.py             load KB → build Documents → embed into persistent Chroma store
-rag_agent.py           retrieve_with_scores, is_confident_match, assess_answer,
-answer_question (the unified RAG entry point)
-jira_tool.py           create_ticket, get_ticket_status (Jira REST API v3)
-ticket_store.py        local SQLite email→ticket_key mapping (duplicate-safe)
-tools.py                LangChain @tool wrappers around the above, for agent use
-graph.py               build_agent() — the LangGraph agent, tools + system prompt + memory
-app.py                 Gradio chat UI
-tests/                    manual verification scripts written throughout development
+ingest.py                  load KB → build Documents → embed into persistent Chroma store
+rag_agent.py               retrieve_with_scores, is_confident_match, assess_answer,
+                           answer_question (the unified RAG entry point)
+jira_tool.py               create_ticket, get_ticket_status (Jira REST API v3)
+ticket_store.py            local SQLite email→ticket_key mapping (duplicate-safe)
+tools.py                   LangChain @tool wrappers around the above, for agent use
+graph.py                   build_agent() — the LangGraph agent, tools + system prompt + memory
+app.py                     Gradio chat UI
+tests/                     manual verification scripts written throughout development
 ```
 
 ## Setup
