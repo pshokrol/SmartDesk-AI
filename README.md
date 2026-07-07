@@ -3,7 +3,7 @@
 An IT & HR help desk agent for **BoldAgent** (a fictional company). Employees can ask
 IT/HR questions answered from a curated knowledge base, and when the knowledge base
 can't confidently answer, the agent collects the details and creates a Jira support
-ticket — with the employee's explicit confirmation required before anything is created.
+ticket with the employee's explicit confirmation required before anything is created.
 
 ## Architecture
 ```
@@ -32,7 +32,7 @@ then fetches live status from Jira
 
 ```
 
-**Why three layers of confidence, not one:** a single distance threshold isn't enough —
+**Why three layers of confidence, not one:** a single distance threshold isn't enough,
 retrieval can look confident (good vector-similarity score) while the actual retrieved
 content doesn't answer the specific question asked (e.g. a general sick-leave policy
 retrieved for a part-time-specific question). The LLM self-assessment step catches this
@@ -46,9 +46,10 @@ time, so status checks can look up "which tickets did this email create" before 
 Jira for live status on each one.
 
 Retrieval in this project is **dense-only** (Chroma vector similarity search over
-locally-embedded knowledge base entries) — no sparse/keyword (BM25) layer.
+locally-embedded knowledge base entries), no sparse/keyword (BM25) layer.
 
 ## Project structure
+```
 data/kb/qa_pairs.json      37 Q&A entries (IT Support, HR Policies, Onboarding, Payroll)
 — deliberate gaps left uncovered (parking, monitor flicker,
 printer setup, etc.) so escalation has real things to catch
@@ -62,7 +63,7 @@ tools.py                LangChain @tool wrappers around the above, for agent use
 graph.py               build_agent() — the LangGraph agent, tools + system prompt + memory
 app.py                 Gradio chat UI
 tests/                    manual verification scripts written throughout development
-
+```
 
 ## Setup
 
@@ -95,8 +96,8 @@ domain. Get your Cloud ID with:
 ```bash
 curl https://your-site.atlassian.net/_edge/tenant_info
 ```
-Then set `JIRA_BASE_URL=https://api.atlassian.com/ex/jira/<cloudId>`. This is genuinely
-under-documented by Atlassian and easy to lose an hour to — using the site domain
+Then set `JIRA_BASE_URL=https://api.atlassian.com/ex/jira/<cloudId>`. This is truely
+under-documented by Atlassian and easy to lose an hour to, using the site domain
 directly with a scoped token returns a misleading 404, not an auth error.
 
 ### 3. Build the knowledge base index
@@ -119,7 +120,7 @@ Open the printed local URL (typically `http://127.0.0.1:7860`).
 
 - **Category labels can't contain spaces in Jira.** `create_ticket` sanitizes this
   (`category.upper().replace(" ", "_")`) so `"IT Support"` becomes the valid label
-  `IT_SUPPORT` — discovered when the agent picked a two-word category on its own and
+  `IT_SUPPORT` discovered when the agent picked a two-word category on its own and
   Jira rejected the request.
 - **The agent must never fabricate required fields.** Early testing showed the LLM
   would invent a placeholder email (`user@example.com`) to satisfy `create_support_ticket`'s
@@ -129,7 +130,7 @@ Open the printed local URL (typically `http://127.0.0.1:7860`).
 - **Single fixed conversation thread in the Gradio UI.** `chat_fn` uses one fixed
   `thread_id` for memory, meaning this UI is built for single-user local demo use, not
   concurrent multi-user sessions. Acceptable simplification for this project's scope.
-- **Dense retrieval only** — no sparse/BM25 hybrid layer. Retrieval quality was verified
+- **Dense retrieval only** (no sparse/BM25 hybrid layer). Retrieval quality was verified
   against real KB queries, paraphrased queries, and deliberate knowledge-gap queries
   (see `tests/manual_score_check.py`).
 
